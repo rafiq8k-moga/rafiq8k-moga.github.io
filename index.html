@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rafiq8K</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 680px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .profile {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .profile-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .links-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .link-item {
+            display: flex;
+            align-items: center;
+            padding: 18px 24px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .link-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .link-item:active {
+            transform: translateY(-1px);
+        }
+
+        .link-logo {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+
+        .link-name {
+            font-size: 16px;
+            font-weight: 600;
+            flex-grow: 1;
+        }
+
+        .link-arrow {
+            font-size: 20px;
+            color: #999;
+            margin-left: 10px;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .profile-image {
+                width: 100px;
+                height: 100px;
+            }
+
+            .profile-name {
+                font-size: 24px;
+            }
+
+            .link-item {
+                padding: 15px 20px;
+            }
+
+            .link-logo {
+                width: 35px;
+                height: 35px;
+                margin-right: 12px;
+            }
+
+            .link-name {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="profile">
+            <img id="profileImage" class="profile-image" src="" alt="Profile">
+            <h1 id="profileName" class="profile-name"></h1>
+        </div>
+        <div id="linksContainer" class="links-container"></div>
+    </div>
+
+    <script>
+        // Fungsi untuk load data dari /data.json
+        async function loadDataFromFile() {
+            try {
+                const response = await fetch('/data.json');
+                if (!response.ok) {
+                    throw new Error('Failed to load data.json');
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Error loading data.json:', error);
+                // Tampilkan pesan error ke user
+                document.getElementById('profileName').textContent = 'Error: data.json tidak ditemukan';
+                return null;
+            }
+        }
+
+        // Render halaman
+        async function renderPage() {
+            const pageData = await loadDataFromFile();
+            
+            // Cek jika data tidak berhasil dimuat
+            if (!pageData) {
+                return;
+            }
+            
+            // Set profile
+            document.getElementById('profileImage').src = pageData.image;
+            document.getElementById('profileName').textContent = pageData.name;
+            
+            // Render links
+            const linksContainer = document.getElementById('linksContainer');
+            linksContainer.innerHTML = '';
+            
+            pageData.links.forEach(link => {
+                const linkElement = document.createElement('a');
+                linkElement.className = 'link-item';
+                linkElement.href = link.url;
+                linkElement.target = '_blank';
+                linkElement.rel = 'noopener noreferrer';
+                
+                linkElement.innerHTML = `
+                    <img class="link-logo" src="${link.logo}" alt="${link.name}">
+                    <span class="link-name">${link.name}</span>
+                    <span class="link-arrow">→</span>
+                `;
+                
+                linksContainer.appendChild(linkElement);
+            });
+        }
+
+        // Load saat halaman siap
+        renderPage();
+    </script>
+</body>
+</html>
